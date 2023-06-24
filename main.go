@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 
 	"google.golang.org/api/docs/v1"
@@ -128,12 +129,22 @@ func main() {
 		log.Fatalf("ファイルのエクスポートに失敗しました: %v", err)
 	}
 
-	// エクスポート結果を保存するファイル
-	// outputFile := "exported_file.pdf"
-	outputFile := fmt.Sprintf("%s_exported_file.pdf", timestamp)
+	// エクスポート結果を保存するファイル名
+	outputFileName := fmt.Sprintf("%s_exported_file.pdf", timestamp)
+
+	// 保存先ディレクトリパスを取得
+	exportFolderPath := "export"
+
+	// 保存先ディレクトリが存在しない場合は作成する
+	if err := os.MkdirAll(exportFolderPath, 0755); err != nil {
+		log.Fatalf("保存先ディレクトリの作成に失敗しました: %v", err)
+	}
+
+	// ファイルの保存先パスを作成
+	outputFilePath := filepath.Join(exportFolderPath, outputFileName)
 
 	// エクスポート結果を保存
-	output, err := os.Create(outputFile)
+	output, err := os.Create(outputFilePath)
 	if err != nil {
 		log.Fatalf("ファイルの保存に失敗しました: %v", err)
 	}

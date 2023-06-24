@@ -21,4 +21,4 @@
 go.work
 
 secret.json
-*.pdf
+export/*.pdf
