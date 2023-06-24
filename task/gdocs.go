@@ -17,7 +17,7 @@ import (
 
 func GdocsExport() {
 	// ========================================
-	// 事前準備: Googleドキュメント関連定義
+	// 0. 事前準備: Googleドキュメント関連定義
 	// ========================================
 	// タイムスタンプを取得（現在時刻をJSTに変換）
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
@@ -26,7 +26,7 @@ func GdocsExport() {
 	newDocumentTitle := fmt.Sprintf("%s_Copy-of-Document", timestamp)
 
 	// ========================================
-	// 事前準備: エクスポートファイル関連定義
+	// 0. 事前準備: エクスポートファイル関連定義
 	// ========================================
 	// エクスポート結果を保存するファイル名
 	outputFileName := fmt.Sprintf("%s_exported_file.pdf", timestamp)
@@ -42,7 +42,7 @@ func GdocsExport() {
 	outputFilePath := filepath.Join(exportFolderPath, outputFileName)
 
 	// ========================================
-	// 事前準備: 秘密鍵読み込み
+	// 0. 事前準備: 秘密鍵読み込み
 	// ========================================
 	// サービスアカウントの秘密鍵を読み込む
 	b, err := ioutil.ReadFile("secret.json")
@@ -51,7 +51,7 @@ func GdocsExport() {
 	}
 
 	// ========================================
-	// 事前準備: サービスアカウントのクライアント作成
+	// 0. 事前準備: サービスアカウントのクライアント作成
 	// ========================================
 	ctx := context.Background()
 	// サービスアカウントのクライアントを作成する
@@ -65,7 +65,7 @@ func GdocsExport() {
 	}
 
 	// ========================================
-	// Googleドキュメントの複製リクエスト作成
+	// 1. Googleドキュメント複製
 	// ========================================
 	// 複製リクエストを作成
 	copyRequest := &drive.File{
@@ -78,20 +78,20 @@ func GdocsExport() {
 		// https://docs.google.com/document/d/1WSzGhnr4rIBVHSTxf1g2bioWarfDtDDhxq1VepMdLwg/edit
 		sourceDocId = "1WSzGhnr4rIBVHSTxf1g2bioWarfDtDDhxq1VepMdLwg"
 	}
-
-	// ========================================
-	// Googleドキュメント複製
-	// ========================================
 	// Googleドキュメントを複製
 	copiedDocument := driveSrv.FileCopy(sourceDocId, copyRequest)
-	// 複製先のGoogleドキュメントのIDを出力
-	fmt.Printf("Googleドキュメントの複製が完了しました。複製先のドキュメントID: %s\n", copiedDocument.Id)
-	// ファイル一覧を表示する
-	driveSrv.FileList()
 	copyDocId := copiedDocument.Id
+	// 複製先のGoogleドキュメントのIDを出力
+	fmt.Printf("Googleドキュメントの複製が完了しました。複製先のドキュメントID: %s\n", copyDocId)
 
 	// ========================================
-	// Googleドキュメントの置換リクエスト作成
+	// 2. Googleドキュメント一覧確認
+	// ========================================
+	// ファイル一覧を表示する
+	driveSrv.FileList()
+
+	// ========================================
+	// 3. Googleドキュメントの置換
 	// ========================================
 	fullName := os.Getenv("FULL_NAME")
 	if fullName == "" {
@@ -119,10 +119,6 @@ func GdocsExport() {
 		}
 		requests = append(requests, req)
 	}
-
-	// ========================================
-	// Googleドキュメントの置換
-	// ========================================
 	// リクエストをバッチで実行
 	batchUpdateReq := &docs.BatchUpdateDocumentRequest{
 		Requests: requests,
@@ -134,7 +130,7 @@ func GdocsExport() {
 	fmt.Println("テキストの置換が完了しました。")
 
 	// ========================================
-	// Googleドキュメントのエクスポート
+	// 4. Googleドキュメントのエクスポート
 	// ========================================
 	// エクスポート実行
 	driveSrv.FileExport(copyDocId, exportMimeType, outputFilePath)
