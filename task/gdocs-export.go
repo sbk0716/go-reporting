@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"google.golang.org/api/docs/v1"
 	"google.golang.org/api/drive/v2"
 )
 
@@ -50,18 +49,13 @@ func GdocsExport() {
 		log.Fatalf("秘密鍵ファイルを読み込めませんでした: %v", err)
 	}
 	// サービスアカウントのクライアントを作成する
-	docsSrv, err := module.NewDocsService(ctx, b)
-	if err != nil {
-		log.Fatalf("サービスアカウントのクライアントを作成できませんでした: %v", err)
-	}
+	docsSrv := module.NewDocsService(ctx, b)
 	driveSrv := module.NewDriveService(ctx, b)
-	if err != nil {
-		log.Fatalf("サービスアカウントのクライアントを作成できませんでした: %v", err)
-	}
 
 	// ========================================
 	// 1. Googleドキュメント複製
 	// ========================================
+	fmt.Printf("1. Googleドキュメントの複製\n")
 	// 複製リクエストを作成
 	copyRequest := &drive.File{
 		Title: newDocumentTitle,
@@ -82,12 +76,16 @@ func GdocsExport() {
 	// ========================================
 	// 2. Googleドキュメント一覧確認
 	// ========================================
+	fmt.Printf("\n")
+	fmt.Printf("2. Googleドキュメント一覧確認\n")
 	// ファイル一覧を表示する
 	driveSrv.FileList()
 
 	// ========================================
 	// 3. Googleドキュメントの置換
 	// ========================================
+	fmt.Printf("\n")
+	fmt.Printf("3. Googleドキュメントの置換\n")
 	fullName := os.Getenv("FULL_NAME")
 	if fullName == "" {
 		fullName = "山田 太郎"
@@ -101,32 +99,13 @@ func GdocsExport() {
 		"${fullName}": fullName,
 		"${email}":    email,
 	}
-	// 置換するテキストを設定するリクエスト
-	requests := []*docs.Request{}
-	for find, replace := range replaceMap {
-		req := &docs.Request{
-			ReplaceAllText: &docs.ReplaceAllTextRequest{
-				ContainsText: &docs.SubstringMatchCriteria{
-					Text: find,
-				},
-				ReplaceText: replace,
-			},
-		}
-		requests = append(requests, req)
-	}
-	// リクエストをバッチで実行
-	batchUpdateReq := &docs.BatchUpdateDocumentRequest{
-		Requests: requests,
-	}
-	_, err = docsSrv.Documents.BatchUpdate(copyDocId, batchUpdateReq).Do()
-	if err != nil {
-		log.Fatalf("ドキュメントのテキストを置換できませんでした: %v", err)
-	}
-	fmt.Println("テキストの置換が完了しました。")
+	docsSrv.ReplaceAllText(copyDocId, replaceMap)
 
 	// ========================================
 	// 4. Googleドキュメントのエクスポート
 	// ========================================
+	fmt.Printf("\n")
+	fmt.Printf("4. Googleドキュメントのエクスポート\n")
 	// エクスポート実行
 	driveSrv.FileExport(copyDocId, exportMimeType, outputFilePath)
 }
