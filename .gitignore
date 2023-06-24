@@ -20,5 +20,7 @@
 # Go workspace file
 go.work
 
+# custom
+.DS_Store
 secret.json
 export/*.pdf
