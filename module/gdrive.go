@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -17,13 +16,7 @@ type DriveService struct {
 	service *drive.Service
 }
 
-func NewDriveService(ctx context.Context, opts ...option.ClientOption) *DriveService {
-	// サービスアカウントの秘密鍵を読み込む
-	b, err := ioutil.ReadFile("secret.json")
-	if err != nil {
-		log.Fatalf("秘密鍵ファイルを読み込めませんでした: %v", err)
-	}
-
+func NewDriveService(ctx context.Context, b []byte) *DriveService {
 	// サービスアカウントのクライアントを作成する
 	srv, err := drive.NewService(ctx, option.WithCredentialsJSON(b))
 	if err != nil {

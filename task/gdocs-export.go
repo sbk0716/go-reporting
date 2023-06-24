@@ -12,7 +12,6 @@ import (
 
 	"google.golang.org/api/docs/v1"
 	"google.golang.org/api/drive/v2"
-	"google.golang.org/api/option"
 )
 
 func GdocsExport() {
@@ -42,24 +41,20 @@ func GdocsExport() {
 	outputFilePath := filepath.Join(exportFolderPath, outputFileName)
 
 	// ========================================
-	// 0. 事前準備: 秘密鍵読み込み
+	// 0. 事前準備: サービスアカウントのクライアント作成
 	// ========================================
+	ctx := context.Background()
 	// サービスアカウントの秘密鍵を読み込む
 	b, err := ioutil.ReadFile("secret.json")
 	if err != nil {
 		log.Fatalf("秘密鍵ファイルを読み込めませんでした: %v", err)
 	}
-
-	// ========================================
-	// 0. 事前準備: サービスアカウントのクライアント作成
-	// ========================================
-	ctx := context.Background()
 	// サービスアカウントのクライアントを作成する
-	docsSrv, err := module.NewDocsService(ctx, option.WithCredentialsJSON(b))
+	docsSrv, err := module.NewDocsService(ctx, b)
 	if err != nil {
 		log.Fatalf("サービスアカウントのクライアントを作成できませんでした: %v", err)
 	}
-	driveSrv := module.NewDriveService(ctx, option.WithCredentialsJSON(b))
+	driveSrv := module.NewDriveService(ctx, b)
 	if err != nil {
 		log.Fatalf("サービスアカウントのクライアントを作成できませんでした: %v", err)
 	}
