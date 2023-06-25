@@ -40,7 +40,7 @@ If a template file with embedded dummy data is prepared in advance, you can crea
 1. Enable the following API in the Google Cloud console.
   - Google Docs API
   - Google Sheets API
-  - Google Drive API.
+  - Google Drive API
 
 ### Configure the OAuth consent screen
 
