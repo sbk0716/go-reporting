@@ -87,7 +87,7 @@ func GdocsExport() {
 	fmt.Printf("3. GoogleDocs: テキスト置換\n")
 	fullName := os.Getenv("FULL_NAME")
 	if fullName == "" {
-		fullName = "山田 太郎"
+		fullName = "xxxx_山田 太郎_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 	}
 	email := os.Getenv("EMAIL")
 	if email == "" {
@@ -98,7 +98,7 @@ func GdocsExport() {
 		"${fullName}": fullName,
 		"${email}":    email,
 	}
-	docsSrv.ReplaceAllText(docId, replacements)
+	docsSrv.ReplaceAllText(copyFileId, replacements)
 
 	// ========================================
 	// 4. GoogleDrive: ファイルエクスポート
@@ -106,5 +106,5 @@ func GdocsExport() {
 	fmt.Printf("\n")
 	fmt.Printf("4. GoogleDrive: ファイルエクスポート\n")
 	// エクスポート実行
-	driveSrv.FileExport(docId, exportMimeType, outputFilePath)
+	driveSrv.FileExport(copyFileId, exportMimeType, outputFilePath)
 }
