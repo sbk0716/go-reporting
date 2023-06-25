@@ -78,7 +78,7 @@ func GsheetsExport() {
 	// 2. GoogleDriveのファイル一覧確認
 	// ========================================
 	fmt.Printf("\n")
-	fmt.Printf("2. GoogleDriveのファイル一覧確認\n")
+	fmt.Printf("2. GoogleDrive: ファイル一覧確認\n")
 	// ファイル一覧を表示する
 	driveSrv.FileList()
 
@@ -101,7 +101,7 @@ func GsheetsExport() {
 		"${email}":    email,
 	}
 	// Googleスプレッドシートの置換
-	sheetsSrv.ReplaceAllText(spreadsheetId, sheetName, replacements)
+	sheetsSrv.ReplaceAllText(copyFileId, sheetName, replacements)
 
 	// ========================================
 	// 4. GoogleDrive: ファイルエクスポート

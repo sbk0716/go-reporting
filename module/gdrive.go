@@ -43,7 +43,7 @@ func (d *DriveService) FileList() *drive.FileList {
 		log.Fatalf("Unable to retrieve files: %v", err)
 	}
 	// GoogleDriveのファイル一覧を表示する
-	fmt.Println("### [GoogleDriveのファイル一覧] ###")
+	fmt.Println("### [GoogleDrive: ファイル一覧] ###")
 	if len(files.Items) > 0 {
 		for _, file := range files.Items {
 			fmt.Printf("ファイル名: %s (ID: %s)\n", file.Title, file.Id)
