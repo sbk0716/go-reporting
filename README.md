@@ -17,7 +17,8 @@ If a template file with embedded dummy data is prepared in advance, you can crea
 │   ├── gdocs-export.go
 │   └── gsheets-export.go
 └── template
-    └── sample-contract.pdf
+    ├── sample-gdocs-contract.pdf
+    └── sample-gsheets-contract.pdf
 ```
 
 
