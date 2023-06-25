@@ -20,8 +20,8 @@ func GdocsExport() {
 	// タイムスタンプを取得（現在時刻をJSTに変換）
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
 	timestamp := time.Now().In(jst).Format("2006-01-02-15-04-05")
-	// 複製先のGoogleドキュメントのタイトル
-	newDocumentTitle := fmt.Sprintf("%s_Copy-of-Document", timestamp)
+	// 複製先のファイルのタイトル
+	newFileTitle := fmt.Sprintf("%s_Copy", timestamp)
 
 	// ========================================
 	// 0. 事前準備: エクスポートファイル関連定義
@@ -53,39 +53,38 @@ func GdocsExport() {
 	driveSrv := module.NewDriveService(ctx, b)
 
 	// ========================================
-	// 1. Googleドキュメント複製
+	// 1. GoogleDrive: ファイル複製
 	// ========================================
-	fmt.Printf("1. Googleドキュメントの複製\n")
+	fmt.Printf("1. GoogleDrive: ファイル複製\n")
 	// 複製リクエストを作成
 	copyRequest := &drive.File{
-		Title: newDocumentTitle,
+		Title: newFileTitle,
 	}
 	// 環境変数からファイルIDを取得
-	sourceDocId := os.Getenv("DOC_ID")
-	if sourceDocId == "" {
+	docId := os.Getenv("DOC_ID")
+	if docId == "" {
 		// コピー元のドキュメントID
 		// https://docs.google.com/document/d/1WSzGhnr4rIBVHSTxf1g2bioWarfDtDDhxq1VepMdLwg/edit
-		sourceDocId = "1WSzGhnr4rIBVHSTxf1g2bioWarfDtDDhxq1VepMdLwg"
+		docId = "1WSzGhnr4rIBVHSTxf1g2bioWarfDtDDhxq1VepMdLwg"
 	}
-	// Googleドキュメントを複製
-	copiedDocument := driveSrv.FileCopy(sourceDocId, copyRequest)
-	copyDocId := copiedDocument.Id
-	// 複製先のGoogleドキュメントのIDを出力
-	fmt.Printf("Googleドキュメントの複製が完了しました。複製先のドキュメントID: %s\n", copyDocId)
+	// GoogleDrive: ファイル複製
+	copiedFile := driveSrv.FileCopy(docId, copyRequest)
+	copyFileId := copiedFile.Id
+	fmt.Printf("GoogleDriveにてファイルの複製が完了しました。[ファイルID: %s]\n", copyFileId)
 
 	// ========================================
-	// 2. Googleドキュメント一覧確認
+	// 2. GoogleDriveのファイル一覧確認
 	// ========================================
 	fmt.Printf("\n")
-	fmt.Printf("2. Googleドキュメント一覧確認\n")
+	fmt.Printf("2. GoogleDriveのファイル一覧確認\n")
 	// ファイル一覧を表示する
 	driveSrv.FileList()
 
 	// ========================================
-	// 3. Googleドキュメントの置換
+	// 3. GoogleSheets: テキスト置換
 	// ========================================
 	fmt.Printf("\n")
-	fmt.Printf("3. Googleドキュメントの置換\n")
+	fmt.Printf("3. GoogleSheets: テキスト置換\n")
 	fullName := os.Getenv("FULL_NAME")
 	if fullName == "" {
 		fullName = "山田 太郎"
@@ -99,13 +98,13 @@ func GdocsExport() {
 		"${fullName}": fullName,
 		"${email}":    email,
 	}
-	docsSrv.ReplaceAllText(copyDocId, replacements)
+	docsSrv.ReplaceAllText(docId, replacements)
 
 	// ========================================
-	// 4. Googleドキュメントのエクスポート
+	// 4. GoogleDrive: ファイルエクスポート
 	// ========================================
 	fmt.Printf("\n")
-	fmt.Printf("4. Googleドキュメントのエクスポート\n")
+	fmt.Printf("4. ファイルエクスポート\n")
 	// エクスポート実行
-	driveSrv.FileExport(copyDocId, exportMimeType, outputFilePath)
+	driveSrv.FileExport(docId, exportMimeType, outputFilePath)
 }
