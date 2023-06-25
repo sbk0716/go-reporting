@@ -58,7 +58,6 @@ If a template file with embedded dummy data is prepared in advance, you can crea
 ## 2.2. Run the app
 
 ```sh
-% go get .
 % go run main.go
 ```
 
