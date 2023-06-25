@@ -81,10 +81,10 @@ func GdocsExport() {
 	driveSrv.FileList()
 
 	// ========================================
-	// 3. GoogleSheets: テキスト置換
+	// 3. GoogleDocs: テキスト置換
 	// ========================================
 	fmt.Printf("\n")
-	fmt.Printf("3. GoogleSheets: テキスト置換\n")
+	fmt.Printf("3. GoogleDocs: テキスト置換\n")
 	fullName := os.Getenv("FULL_NAME")
 	if fullName == "" {
 		fullName = "山田 太郎"
