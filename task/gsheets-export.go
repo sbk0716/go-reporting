@@ -75,7 +75,7 @@ func GsheetsExport() {
 	fmt.Printf("GoogleDriveにてファイルの複製が完了しました。[ファイルID: %s]\n", copyFileId)
 
 	// ========================================
-	// 2. GoogleDriveのファイル一覧確認
+	// 2. GoogleDrive: ファイル一覧確認
 	// ========================================
 	fmt.Printf("\n")
 	fmt.Printf("2. GoogleDrive: ファイル一覧確認\n")
@@ -107,7 +107,7 @@ func GsheetsExport() {
 	// 4. GoogleDrive: ファイルエクスポート
 	// ========================================
 	fmt.Printf("\n")
-	fmt.Printf("4. ファイルエクスポート\n")
+	fmt.Printf("4. GoogleDrive: ファイルエクスポート\n")
 	// エクスポート実行
 	driveSrv.FileExport(copyFileId, exportMimeType, outputFilePath)
 }
