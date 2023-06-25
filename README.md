@@ -81,7 +81,7 @@ ReplaceAllText replace: "taro.yamada@test.com"
 Id                                             Name                                   Type   Size     Created
 1MAFvYn4PAjWXoAfmHGJ4b6NqQeHLtd0LB0YYUPwm17Q   2023-06-25-07-41-40_Copy-of-Document   doc    4.2 KB   2023-06-25 07:41:40
 % 
-% gdrive export --force --service-account secret.json -c . 1MAFvYn4PAjWXoAfmHGJ4b6NqQeHLtd0LB0YYUPwm17Q
+% gdrive export --force --mime 'application/pdf' --service-account secret.json -c . 1MAFvYn4PAjWXoAfmHGJ4b6NqQeHLtd0LB0YYUPwm17Q
 Exported '2023-06-25-07-41-40_Copy-of-Document.pdf' with mime type: 'application/pdf'
 % gdrive delete --service-account secret.json -c . 1MAFvYn4PAjWXoAfmHGJ4b6NqQeHLtd0LB0YYUPwm17Q
 Deleted '2023-06-25-07-41-40_Copy-of-Document'

@@ -27,12 +27,12 @@ func NewDriveService(ctx context.Context, b []byte) *DriveService {
 	}
 }
 
-func (d *DriveService) FileCopy(sourceDocId string, copyRequest *drive.File) *drive.File {
-	copiedDocument, err := d.service.Files.Copy(sourceDocId, copyRequest).Do()
+func (d *DriveService) FileCopy(fileId string, copyRequest *drive.File) *drive.File {
+	copiedFile, err := d.service.Files.Copy(fileId, copyRequest).Do()
 	if err != nil {
-		log.Fatalf("Googleドキュメントの複製に失敗しました: %v", err)
+		log.Fatalf("ファイルの複製に失敗しました: %v", err)
 	}
-	return copiedDocument
+	return copiedFile
 }
 
 func (d *DriveService) FileList() *drive.FileList {
