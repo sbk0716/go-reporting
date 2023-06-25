@@ -37,14 +37,14 @@ If a template file with embedded dummy data is prepared in advance, you can crea
 
 ## 2.1. Set up your environment
 ### Enable the API
-1. Enable the following APi in the Google Cloud console.
+1. Enable the following API in the Google Cloud console.
   - Google Docs API
   - Google Sheets API
   - Google Drive API.
 
 ### Configure the OAuth consent screen
 
-1. Refer to the following URLs to set up.
+1. Refer to the following URL to set up.
   - https://developers.google.com/docs/api/quickstart/go#configure_the_oauth_consent_screen
 
 ### Create the service account
