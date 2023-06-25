@@ -31,6 +31,10 @@ If a template file with embedded dummy data is prepared in advance, you can crea
 - A template file created in Google Docs.
 - A template file created in Google Sheets.
 
+### Notes：
+- The template file must be shared with the service account.
+
+
 ## 2.1. Set up your environment
 ### Enable the API
 1. Enable the following APi in the Google Cloud console.
@@ -51,7 +55,7 @@ If a template file with embedded dummy data is prepared in advance, you can crea
 5. Save the private key as secret.json, and move the file to your working directory.
 
 
-## 2.2. Run app
+## 2.2. Run the app
 
 ```sh
 % go get .

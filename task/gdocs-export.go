@@ -87,7 +87,7 @@ func GdocsExport() {
 	fmt.Printf("3. GoogleDocs: テキスト置換\n")
 	fullName := os.Getenv("FULL_NAME")
 	if fullName == "" {
-		fullName = "xxxx_山田 太郎_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+		fullName = "山田 太郎"
 	}
 	email := os.Getenv("EMAIL")
 	if email == "" {
