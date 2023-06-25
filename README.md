@@ -33,7 +33,6 @@ If a template file with embedded dummy data is prepared in advance, you can crea
 ## 2.1. Set up your environment
 ### Enable the API
 1. Enable the following APi in the Google Cloud console.
-
   - Google Docs API
   - Google Sheets API
   - Google Drive API.
