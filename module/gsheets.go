@@ -14,6 +14,7 @@ type SheetsService struct {
 	service *sheets.Service
 }
 
+// サービスアカウントのクライアントを作成する
 func NewSheetsService(ctx context.Context, b []byte) *SheetsService {
 	// サービスアカウントのクライアントを作成する
 	srv, err := sheets.NewService(ctx, option.WithCredentialsJSON(b))

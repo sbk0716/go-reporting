@@ -95,11 +95,11 @@ func GdocsExport() {
 		email = "taro.yamada@test.com"
 	}
 	// 置換対象の文字列と置換後の文字列のマップ
-	replaceMap := map[string]string{
+	replacements := map[string]string{
 		"${fullName}": fullName,
 		"${email}":    email,
 	}
-	docsSrv.ReplaceAllText(copyDocId, replaceMap)
+	docsSrv.ReplaceAllText(copyDocId, replacements)
 
 	// ========================================
 	// 4. Googleドキュメントのエクスポート
