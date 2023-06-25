@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net/http"
 	"os"
 
 	"google.golang.org/api/drive/v2"
@@ -16,6 +15,7 @@ type DriveService struct {
 	service *drive.Service
 }
 
+// サービスアカウントのクライアントを作成する
 func NewDriveService(ctx context.Context, b []byte) *DriveService {
 	// サービスアカウントのクライアントを作成する
 	srv, err := drive.NewService(ctx, option.WithCredentialsJSON(b))
@@ -27,6 +27,7 @@ func NewDriveService(ctx context.Context, b []byte) *DriveService {
 	}
 }
 
+// ファイルを複製する
 func (d *DriveService) FileCopy(fileId string, copyRequest *drive.File) *drive.File {
 	copiedFile, err := d.service.Files.Copy(fileId, copyRequest).Do()
 	if err != nil {
@@ -35,13 +36,14 @@ func (d *DriveService) FileCopy(fileId string, copyRequest *drive.File) *drive.F
 	return copiedFile
 }
 
+// GoogleDriveのファイル一覧を表示する
 func (d *DriveService) FileList() *drive.FileList {
 	files, err := d.service.Files.List().Fields("*").Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve files: %v", err)
 	}
-	// ファイル一覧を表示する
-	fmt.Println("### [ファイル一覧] ###")
+	// GoogleDriveのファイル一覧を表示する
+	fmt.Println("### [GoogleDriveのファイル一覧] ###")
 	if len(files.Items) > 0 {
 		for _, file := range files.Items {
 			fmt.Printf("ファイル名: %s (ID: %s)\n", file.Title, file.Id)
@@ -52,7 +54,8 @@ func (d *DriveService) FileList() *drive.FileList {
 	return files
 }
 
-func (d *DriveService) FileExport(fileId string, mimeType string, outputFilePath string) *http.Response {
+// GoogleDriveのファイルをPDFとしてエクスポートする
+func (d *DriveService) FileExport(fileId string, mimeType string, outputFilePath string) {
 	// エクスポートのリクエスト作成
 	exportRequest := d.service.Files.Export(fileId, mimeType)
 	// エクスポート実行
@@ -63,15 +66,14 @@ func (d *DriveService) FileExport(fileId string, mimeType string, outputFilePath
 	// エクスポート結果保存用ファイルの作成
 	output, err := os.Create(outputFilePath)
 	if err != nil {
-		log.Fatalf("ファイルの保存に失敗しました: %v", err)
+		log.Fatalf("エクスポート結果保存用ファイルの作成に失敗しました: %v", err)
 	}
 	defer output.Close()
 
 	// エクスポート結果をファイルに書き込む
 	_, err = io.Copy(output, response.Body)
 	if err != nil {
-		log.Fatalf("ファイルの書き込みに失敗しました: %v", err)
+		log.Fatalf("エクスポート結果のファイルへの書き込みに失敗しました: %v", err)
 	}
 	fmt.Println("ファイルのエクスポートが完了しました。")
-	return response
 }

@@ -26,6 +26,7 @@ func NewSheetsService(ctx context.Context, b []byte) *SheetsService {
 	}
 }
 
+// 対象のスプレッドシートのテキストを置換する
 func (s *SheetsService) ReplaceAllText(spreadsheetID, sheetName string, replacements map[string]string) {
 	// 置換対象のセル範囲を指定
 	rangeValue := fmt.Sprintf("%s!A1:ZZ", sheetName)

@@ -25,6 +25,7 @@ func NewDocsService(ctx context.Context, b []byte) *DocsService {
 	}
 }
 
+// 対象のドキュメントのテキストを置換する
 func (d *DocsService) ReplaceAllText(documentId string, replacements map[string]string) {
 	// 置換するテキストを設定するリクエスト
 	requests := []*docs.Request{}
