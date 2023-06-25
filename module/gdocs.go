@@ -13,10 +13,7 @@ type DocsService struct {
 	service *docs.Service
 }
 
-<<<<<<< HEAD
 // サービスアカウントのクライアントを作成する
-=======
->>>>>>> main
 func NewDocsService(ctx context.Context, b []byte) *DocsService {
 	// サービスアカウントのクライアントを作成する
 	srv, err := docs.NewService(ctx, option.WithCredentialsJSON(b))
