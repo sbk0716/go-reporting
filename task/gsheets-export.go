@@ -13,7 +13,7 @@ import (
 	"google.golang.org/api/drive/v2"
 )
 
-func GdocsExport() {
+func GsheetsExport() {
 	// ========================================
 	// 0. 事前準備: Googleドキュメント関連定義
 	// ========================================
@@ -49,8 +49,9 @@ func GdocsExport() {
 		log.Fatalf("秘密鍵ファイルを読み込めませんでした: %v", err)
 	}
 	// サービスアカウントのクライアントを作成する
-	docsSrv := module.NewDocsService(ctx, b)
+	// docsSrv := module.NewDocsService(ctx, b)
 	driveSrv := module.NewDriveService(ctx, b)
+	sheetsSrv := module.NewSheetsService(ctx, b)
 
 	// ========================================
 	// 1. GoogleDrive: ファイル複製
@@ -60,15 +61,16 @@ func GdocsExport() {
 	copyRequest := &drive.File{
 		Title: newFileTitle,
 	}
+	// スプレッドシートIDとシート名の設定
+	sheetName := "contract"
 	// 環境変数からファイルIDを取得
-	docId := os.Getenv("DOC_ID")
-	if docId == "" {
-		// コピー元のドキュメントID
-		// https://docs.google.com/document/d/1WSzGhnr4rIBVHSTxf1g2bioWarfDtDDhxq1VepMdLwg/edit
-		docId = "1WSzGhnr4rIBVHSTxf1g2bioWarfDtDDhxq1VepMdLwg"
+	spreadsheetId := os.Getenv("SHEET_ID")
+	if spreadsheetId == "" {
+		// https://docs.google.com/spreadsheets/d/1F8viNCLM07RJC3Yk99EeH4OykUPfOB7LoQXAcmqK8Y4/edit#gid=0
+		spreadsheetId = "1F8viNCLM07RJC3Yk99EeH4OykUPfOB7LoQXAcmqK8Y4"
 	}
 	// GoogleDrive: ファイル複製
-	copiedFile := driveSrv.FileCopy(docId, copyRequest)
+	copiedFile := driveSrv.FileCopy(spreadsheetId, copyRequest)
 	copyFileId := copiedFile.Id
 	fmt.Printf("GoogleDriveにてファイルの複製が完了しました。[ファイルID: %s]\n", copyFileId)
 
@@ -76,7 +78,7 @@ func GdocsExport() {
 	// 2. GoogleDriveのファイル一覧確認
 	// ========================================
 	fmt.Printf("\n")
-	fmt.Printf("2. GoogleDriveのファイル一覧確認\n")
+	fmt.Printf("2. GoogleDrive: ファイル一覧確認\n")
 	// ファイル一覧を表示する
 	driveSrv.FileList()
 
@@ -98,7 +100,8 @@ func GdocsExport() {
 		"${fullName}": fullName,
 		"${email}":    email,
 	}
-	docsSrv.ReplaceAllText(docId, replacements)
+	// Googleスプレッドシートの置換
+	sheetsSrv.ReplaceAllText(copyFileId, sheetName, replacements)
 
 	// ========================================
 	// 4. GoogleDrive: ファイルエクスポート
@@ -106,5 +109,5 @@ func GdocsExport() {
 	fmt.Printf("\n")
 	fmt.Printf("4. ファイルエクスポート\n")
 	// エクスポート実行
-	driveSrv.FileExport(docId, exportMimeType, outputFilePath)
+	driveSrv.FileExport(copyFileId, exportMimeType, outputFilePath)
 }

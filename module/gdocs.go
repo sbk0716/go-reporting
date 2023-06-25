@@ -13,6 +13,7 @@ type DocsService struct {
 	service *docs.Service
 }
 
+// サービスアカウントのクライアントを作成する
 func NewDocsService(ctx context.Context, b []byte) *DocsService {
 	// サービスアカウントのクライアントを作成する
 	srv, err := docs.NewService(ctx, option.WithCredentialsJSON(b))
@@ -24,18 +25,19 @@ func NewDocsService(ctx context.Context, b []byte) *DocsService {
 	}
 }
 
-func (d *DocsService) ReplaceAllText(documentId string, replaceMap map[string]string) {
+// 対象のドキュメントのテキストを置換する
+func (d *DocsService) ReplaceAllText(documentId string, replacements map[string]string) {
 	// 置換するテキストを設定するリクエスト
 	requests := []*docs.Request{}
-	for find, replace := range replaceMap {
-		fmt.Printf("ReplaceAllText find: %#v\n", find)
-		fmt.Printf("ReplaceAllText replace: %#v\n", replace)
+	for searchStr, replaceStr := range replacements {
+		fmt.Printf("ReplaceAllText searchStr: %#v\n", searchStr)
+		fmt.Printf("ReplaceAllText replaceStr: %#v\n", replaceStr)
 		req := &docs.Request{
 			ReplaceAllText: &docs.ReplaceAllTextRequest{
 				ContainsText: &docs.SubstringMatchCriteria{
-					Text: find,
+					Text: searchStr,
 				},
-				ReplaceText: replace,
+				ReplaceText: replaceStr,
 			},
 		}
 		requests = append(requests, req)
@@ -48,5 +50,5 @@ func (d *DocsService) ReplaceAllText(documentId string, replaceMap map[string]st
 	if err != nil {
 		log.Fatalf("ドキュメントのテキストを置換できませんでした: %v", err)
 	}
-	fmt.Println("テキストの置換が完了しました。")
+	fmt.Println("ドキュメントのテキストの置換が完了しました。")
 }
