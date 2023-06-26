@@ -90,6 +90,7 @@ func (s *SheetsService) TransferDataToSheet(spreadsheetID string, sheetName stri
 	// 対象のスプレッドシートの情報を取得する
 	sheet, err := s.service.Spreadsheets.Get(spreadsheetID).Do()
 	if err != nil {
+		log.Fatalf("スプレッドシートの情報の取得が失敗しました: %v", err)
 		return err
 	}
 
@@ -107,6 +108,7 @@ func (s *SheetsService) TransferDataToSheet(spreadsheetID string, sheetName stri
 		Values: values,
 	}).ValueInputOption("USER_ENTERED").Do()
 	if err != nil {
+		log.Fatalf("スプレッドシートへのデータの転記が失敗しました: %v", err)
 		return err
 	}
 	fmt.Println("スプレッドシートへのデータの転記が完了しました。")
@@ -144,8 +146,69 @@ func (s *SheetsService) TransferDataToSheet(spreadsheetID string, sheetName stri
 	// 書式設定を適用する
 	_, err = s.service.Spreadsheets.BatchUpdate(spreadsheetID, batchUpdateRequest).Do()
 	if err != nil {
+		log.Fatalf("スプレッドシートの書式設定が失敗しました: %v", err)
 		return err
 	}
-	fmt.Println("スプレッドシートの書式/レイアウト設定が完了しました。")
+	fmt.Println("スプレッドシートの書式設定が完了しました。")
+	return nil
+}
+
+func (s *SheetsService) SetPrintRange(spreadsheetID, sheetName string, data [][]string) error {
+	// 対象のスプレッドシートの情報を取得する
+	sheet, err := s.service.Spreadsheets.Get(spreadsheetID).Do()
+	if err != nil {
+		log.Fatalf("スプレッドシートの情報の取得が失敗しました: %v", err)
+		return err
+	}
+
+	// シートIDを取得
+	sheetID := getSheetID(sheet, sheetName)
+	// 印刷するデータの範囲を指定
+	startRowIndex := int64(0) // 1行目からデータを転記する
+	endRowIndex := startRowIndex + int64(len(data))
+	startColumnIndex := int64(0) // A列から転記する
+	endColumnIndex := startColumnIndex + int64(len(data[0]))
+
+	request := &sheets.BatchUpdateSpreadsheetRequest{
+		Requests: []*sheets.Request{
+			{
+				UpdateDimensionProperties: &sheets.UpdateDimensionPropertiesRequest{
+					Range: &sheets.DimensionRange{
+						SheetId:    sheetID,
+						Dimension:  "ROWS",
+						StartIndex: startRowIndex,
+						EndIndex:   endRowIndex,
+					},
+					Properties: &sheets.DimensionProperties{
+						PixelSize: 20,
+					},
+					Fields: "pixelSize",
+				},
+			},
+			{
+				UpdateDimensionProperties: &sheets.UpdateDimensionPropertiesRequest{
+					Range: &sheets.DimensionRange{
+						SheetId:    sheetID,
+						Dimension:  "COLUMNS",
+						StartIndex: startColumnIndex,
+						EndIndex:   endColumnIndex,
+					},
+					Properties: &sheets.DimensionProperties{
+						PixelSize: 80,
+					},
+					Fields: "pixelSize",
+				},
+			},
+		},
+	}
+
+	// 印刷設定を変更する
+	_, err = s.service.Spreadsheets.BatchUpdate(spreadsheetID, request).Do()
+	if err != nil {
+		log.Fatalf("スプレッドシートの印刷範囲の設定が失敗しました: %v", err)
+		return err
+	}
+	fmt.Println("スプレッドシートの印刷範囲の設定が完了しました。")
+
 	return nil
 }

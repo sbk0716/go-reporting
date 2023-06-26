@@ -50,7 +50,6 @@ func GsheetsBankStatementExport() {
 		log.Fatalf("秘密鍵ファイルを読み込めませんでした: %v", err)
 	}
 	// サービスアカウントのクライアントを作成する
-	// docsSrv := module.NewDocsService(ctx, b)
 	driveSrv := module.NewDriveService(ctx, b)
 	sheetsSrv := module.NewSheetsService(ctx, b)
 
@@ -84,10 +83,10 @@ func GsheetsBankStatementExport() {
 	driveSrv.FileList()
 
 	// ========================================
-	// 3. GoogleSheets: データ転記/書式/レイアウト設定
+	// 3. GoogleSheets: データ転記/書式設定
 	// ========================================
 	fmt.Printf("\n")
-	fmt.Printf("3. GoogleSheets: データ転記/書式/レイアウト設定\n")
+	fmt.Printf("3. GoogleSheets: データ転記/書式設定\n")
 
 	// CSVファイルを読み込む
 	csvFile, err := os.Open("sample.csv")
@@ -105,10 +104,17 @@ func GsheetsBankStatementExport() {
 	sheetsSrv.TransferDataToSheet(copyFileId, sheetName, records)
 
 	// ========================================
-	// 4. GoogleDrive: ファイルエクスポート
+	// 4. GoogleSheets: レイアウト設定
 	// ========================================
 	fmt.Printf("\n")
-	fmt.Printf("4. GoogleDrive: ファイルエクスポート\n")
+	fmt.Printf("4. GoogleSheets: レイアウト設定\n")
+	sheetsSrv.SetPrintRange(copyFileId, sheetName, records)
+
+	// ========================================
+	// 5. GoogleDrive: ファイルエクスポート
+	// ========================================
+	fmt.Printf("\n")
+	fmt.Printf("5. GoogleDrive: ファイルエクスポート\n")
 	// エクスポート実行
 	driveSrv.FileExport(copyFileId, exportMimeType, outputFilePath)
 }
