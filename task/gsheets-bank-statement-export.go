@@ -84,10 +84,10 @@ func GsheetsBankStatementExport() {
 	driveSrv.FileList()
 
 	// ========================================
-	// 3. GoogleSheets: データ転記
+	// 3. GoogleSheets: データ転記/書式/レイアウト設定
 	// ========================================
 	fmt.Printf("\n")
-	fmt.Printf("3. GoogleSheets: データ転記\n")
+	fmt.Printf("3. GoogleSheets: データ転記/書式/レイアウト設定\n")
 
 	// CSVファイルを読み込む
 	csvFile, err := os.Open("sample.csv")

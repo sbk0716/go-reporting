@@ -109,6 +109,7 @@ func (s *SheetsService) TransferDataToSheet(spreadsheetID string, sheetName stri
 	if err != nil {
 		return err
 	}
+	fmt.Println("スプレッドシートへのデータの転記が完了しました。")
 
 	// 書式設定の範囲を指定
 	formattingRange := &sheets.GridRange{
@@ -145,6 +146,6 @@ func (s *SheetsService) TransferDataToSheet(spreadsheetID string, sheetName stri
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("スプレッドシートの書式/レイアウト設定が完了しました。")
 	return nil
 }
