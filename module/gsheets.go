@@ -194,7 +194,7 @@ func (s *SheetsService) SetPrintRange(spreadsheetID, sheetName string, data [][]
 						EndIndex:   endColumnIndex,
 					},
 					Properties: &sheets.DimensionProperties{
-						PixelSize: 80,
+						PixelSize: 200,
 					},
 					Fields: "pixelSize",
 				},
@@ -209,6 +209,48 @@ func (s *SheetsService) SetPrintRange(spreadsheetID, sheetName string, data [][]
 		return err
 	}
 	fmt.Println("スプレッドシートの印刷範囲の設定が完了しました。")
+
+	return nil
+}
+
+func (s *SheetsService) SetScaleToFitWidth(spreadsheetID, sheetName string, data [][]string) error {
+	// 対象のスプレッドシートの情報を取得する
+	sheet, err := s.service.Spreadsheets.Get(spreadsheetID).Do()
+	if err != nil {
+		log.Fatalf("スプレッドシートの情報の取得が失敗しました: %v", err)
+		return err
+	}
+
+	// シートIDを取得
+	sheetID := getSheetID(sheet, sheetName)
+	// startRowIndex := int64(0) // 1行目からデータを転記する
+	// endRowIndex := startRowIndex + int64(len(data))
+	startColumnIndex := int64(0) // A列から転記する
+	endColumnIndex := startColumnIndex + int64(len(data[0]))
+
+	// スケールの設定を行うリクエストを作成
+	requests := []*sheets.Request{
+		{
+			AutoResizeDimensions: &sheets.AutoResizeDimensionsRequest{
+				Dimensions: &sheets.DimensionRange{
+					SheetId:    sheetID,
+					Dimension:  "COLUMNS",
+					StartIndex: startColumnIndex,
+					EndIndex:   endColumnIndex,
+				},
+			},
+		},
+	}
+
+	// リクエストをバッチ更新として送信
+	_, err = s.service.Spreadsheets.BatchUpdate(spreadsheetID, &sheets.BatchUpdateSpreadsheetRequest{
+		Requests: requests,
+	}).Do()
+	if err != nil {
+		log.Fatalf("スプレッドシートのスケールの設定が失敗しました: %v", err)
+		return err
+	}
+	fmt.Println("スプレッドシートのスケールの設定が完了しました。")
 
 	return nil
 }

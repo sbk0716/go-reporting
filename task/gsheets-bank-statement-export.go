@@ -109,6 +109,7 @@ func GsheetsBankStatementExport() {
 	fmt.Printf("\n")
 	fmt.Printf("4. GoogleSheets: レイアウト設定\n")
 	sheetsSrv.SetPrintRange(copyFileId, sheetName, records)
+	// sheetsSrv.SetScaleToFitWidth(copyFileId, sheetName, records)
 
 	// ========================================
 	// 5. GoogleDrive: ファイルエクスポート
