@@ -6,15 +6,17 @@ import (
 )
 
 func main() {
-	taskName := "gsheets-contract"
+	taskName := "gsheets-bank-statement-export"
 	if envTaskName := os.Getenv("TASK"); envTaskName != "" {
 		taskName = envTaskName
 	}
-	if taskName == "gdocs-contract" {
-		task.GdocsExport()
-	} else if taskName == "gsheets-contract" {
-		task.GsheetsExport()
+	if taskName == "gdocs-contract-export" {
+		task.GdocsContractExport()
+	} else if taskName == "gsheets-contract-export" {
+		task.GsheetsContractExport()
+	} else if taskName == "gsheets-bank-statement-export" {
+		task.GsheetsBankStatementExport()
 	} else {
-		task.GdocsExport()
+		task.GdocsContractExport()
 	}
 }

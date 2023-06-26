@@ -13,7 +13,7 @@ import (
 	"google.golang.org/api/drive/v2"
 )
 
-func GdocsExport() {
+func GdocsContractExport() {
 	// ========================================
 	// 0. 事前準備: Googleドキュメント関連定義
 	// ========================================

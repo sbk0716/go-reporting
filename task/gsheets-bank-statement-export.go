@@ -2,6 +2,7 @@ package task
 
 import (
 	"context"
+	"encoding/csv"
 	"fmt"
 	"go-reporting/module"
 	"io/ioutil"
@@ -13,7 +14,7 @@ import (
 	"google.golang.org/api/drive/v2"
 )
 
-func GsheetsExport() {
+func GsheetsBankStatementExport() {
 	// ========================================
 	// 0. 事前準備: Googleドキュメント関連定義
 	// ========================================
@@ -62,12 +63,12 @@ func GsheetsExport() {
 		Title: newFileTitle,
 	}
 	// スプレッドシートIDとシート名の設定
-	sheetName := "contract"
+	sheetName := "main"
 	// 環境変数からファイルIDを取得
 	spreadsheetId := os.Getenv("SHEET_ID")
 	if spreadsheetId == "" {
-		// https://docs.google.com/spreadsheets/d/1F8viNCLM07RJC3Yk99EeH4OykUPfOB7LoQXAcmqK8Y4/edit#gid=0
-		spreadsheetId = "1F8viNCLM07RJC3Yk99EeH4OykUPfOB7LoQXAcmqK8Y4"
+		// https://docs.google.com/spreadsheets/d/1EobgsZMdxGW5h_3KS_Zjkes3eiUyLOU33rB2_GWi2ss/edit#gid=1792146230
+		spreadsheetId = "1EobgsZMdxGW5h_3KS_Zjkes3eiUyLOU33rB2_GWi2ss"
 	}
 	// GoogleDrive: ファイル複製
 	copiedFile := driveSrv.FileCopy(spreadsheetId, copyRequest)
@@ -83,25 +84,25 @@ func GsheetsExport() {
 	driveSrv.FileList()
 
 	// ========================================
-	// 3. GoogleSheets: テキスト置換
+	// 3. GoogleSheets: データ転記
 	// ========================================
 	fmt.Printf("\n")
-	fmt.Printf("3. GoogleSheets: テキスト置換\n")
-	fullName := os.Getenv("FULL_NAME")
-	if fullName == "" {
-		fullName = "山田 太郎"
+	fmt.Printf("3. GoogleSheets: データ転記\n")
+
+	// CSVファイルを読み込む
+	csvFile, err := os.Open("sample.csv")
+	if err != nil {
+		log.Fatalf("Failed to open CSV file: %v", err)
 	}
-	email := os.Getenv("EMAIL")
-	if email == "" {
-		email = "taro.yamada@test.com"
+	defer csvFile.Close()
+
+	// CSVファイルをパースしてデータを取得
+	csvReader := csv.NewReader(csvFile)
+	records, err := csvReader.ReadAll()
+	if err != nil {
+		log.Fatalf("Failed to read CSV file: %v", err)
 	}
-	// 置換対象の文字列と置換後の文字列のマップ
-	replacements := map[string]string{
-		"${fullName}": fullName,
-		"${email}":    email,
-	}
-	// Googleスプレッドシートの置換
-	sheetsSrv.ReplaceAllText(copyFileId, sheetName, replacements)
+	sheetsSrv.TransferDataToSheet(copyFileId, sheetName, records)
 
 	// ========================================
 	// 4. GoogleDrive: ファイルエクスポート

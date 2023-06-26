@@ -26,6 +26,16 @@ func NewSheetsService(ctx context.Context, b []byte) *SheetsService {
 	}
 }
 
+// 対象のスプレッドシートのシートIDを取得する
+func getSheetID(sheet *sheets.Spreadsheet, sheetName string) int64 {
+	for _, s := range sheet.Sheets {
+		if s.Properties.Title == sheetName {
+			return s.Properties.SheetId
+		}
+	}
+	return 0
+}
+
 // 対象のスプレッドシートのテキストを置換する
 func (s *SheetsService) ReplaceAllText(spreadsheetID, sheetName string, replacements map[string]string) {
 	// 置換対象のセル範囲を指定
@@ -63,4 +73,78 @@ func (s *SheetsService) ReplaceAllText(spreadsheetID, sheetName string, replacem
 	}
 
 	fmt.Println("スプレッドシートのテキストの置換が完了しました。")
+}
+
+// 対象のスプレッドシートにデータを転記する
+func (s *SheetsService) TransferDataToSheet(spreadsheetID string, sheetName string, data [][]string) error {
+	// 転記するデータを作成
+	values := make([][]interface{}, len(data))
+	for i, record := range data {
+		row := make([]interface{}, len(record))
+		for j, value := range record {
+			row[j] = value
+		}
+		values[i] = row
+	}
+
+	// 対象のスプレッドシートの情報を取得する
+	sheet, err := s.service.Spreadsheets.Get(spreadsheetID).Do()
+	if err != nil {
+		return err
+	}
+
+	// シートIDを取得
+	sheetID := getSheetID(sheet, sheetName)
+
+	// 転記するデータの範囲を指定
+	startRowIndex := int64(9) // 10行目からデータを転記する
+	endRowIndex := startRowIndex + int64(len(data))
+	startColumnIndex := int64(0) // A列から転記する
+	endColumnIndex := startColumnIndex + int64(len(data[0]))
+
+	// 転記するデータをシートに書き込む
+	_, err = s.service.Spreadsheets.Values.Update(spreadsheetID, fmt.Sprintf("%s!A%d", sheetName, startRowIndex), &sheets.ValueRange{
+		Values: values,
+	}).ValueInputOption("USER_ENTERED").Do()
+	if err != nil {
+		return err
+	}
+
+	// 書式設定の範囲を指定
+	formattingRange := &sheets.GridRange{
+		SheetId:          sheetID,
+		StartRowIndex:    startRowIndex,
+		EndRowIndex:      endRowIndex,
+		StartColumnIndex: startColumnIndex,
+		EndColumnIndex:   endColumnIndex,
+	}
+
+	// 書式設定をコピーして貼り付けるリクエストを作成
+	formattingRequests := []*sheets.Request{}
+	formattingRequests = append(formattingRequests, &sheets.Request{
+		CopyPaste: &sheets.CopyPasteRequest{
+			Source: &sheets.GridRange{
+				SheetId:          sheetID,
+				StartRowIndex:    startRowIndex,
+				EndRowIndex:      10, // 10行目の書式をコピーする
+				StartColumnIndex: startColumnIndex,
+				EndColumnIndex:   endColumnIndex,
+			},
+			Destination: formattingRange,
+			PasteType:   "PASTE_FORMAT",
+		},
+	})
+
+	// バッチ更新リクエストを作成
+	batchUpdateRequest := &sheets.BatchUpdateSpreadsheetRequest{
+		Requests: formattingRequests,
+	}
+
+	// 書式設定を適用する
+	_, err = s.service.Spreadsheets.BatchUpdate(spreadsheetID, batchUpdateRequest).Do()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
